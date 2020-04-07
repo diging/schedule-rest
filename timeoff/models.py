@@ -1,26 +1,21 @@
 from django.db import models
 from datetime import datetime, date
+from django.utils import timezone
+from accounts.models import User
+
 
 # Create your models here.
+class Timeoff(models.Model):
+    id = models.AutoField(primary_key=True)
+    username = models.ForeignKey(User, on_delete=models.CASCADE)
+    requested_timeoff = models.DateField(auto_now=False)
+    text_box = models.TextField(max_length=500)
+    submission_date = models.DateTimeField('date submitted',default=timezone.now)
 
-class Users(models.Model):
-    p_id = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=200)
-    requested_date = models.DateField(auto_now=False)
-    submit_date = models.DateField(auto_now_add=False, auto_now=False)
-    choice_text = models.CharField(max_length=400)
+
 
 class Status(models.Model):
-    user = models.ForeignKey(Users, on_delete=models.CASCADE)
-    status = models.TextChoices('status', 'Approved Denied Pending')
-    modified_by = models.TextChoices('modified_by', 'admin1 admin2')
-
-
-
-
-
-
-
-
-
-
+    STATUS_CHOICES = [ ('A','Approved'),('D','Denied'),('P','Pending')]
+    id = models.OneToOneField('Timeoff', on_delete=models.CASCADE, primary_key=True)
+    status = models.CharField('status', choices=STATUS_CHOICES, max_length=1)
+    approved_by = models.ForeignKey(User, on_delete=models.CASCADE)
