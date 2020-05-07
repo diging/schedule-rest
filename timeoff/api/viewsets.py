@@ -8,36 +8,31 @@ from django.http import HttpResponseRedirect, HttpResponse
 
 
 class TimeoffViewSet(viewsets.ViewSet):
-    # Create, Retreive, Delete, list
+    # Create, Retreive, Delete, Return list
     def create(self, request):
-        my_username = Timeoff.POST['username']
         queryset = Timeoff.objects.all()
         serializer = TimeoffSerializer
-        if user:
+        if User:
             serializer.save(username=self.request.username)
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
     def retrieve(self, request):
-        my_username = Timeoff.POST['username']
-        my_id = Timeoff.POST['id']
         queryset = Timeoff.objects.all()
-        user = get_object_or_404(queryset.filter(username=my_username), pk=my_id)
+        user = get_object_or_404(queryset.filter(username=self.request.username), pk=self.request.id)
         serializer = TimeoffSerializer(user)
         return Response(serializer.data)
 
     def return_list(self,request):
-        my_username = Timeoff.POST['username']
         queryset = Timeoff.objects.all()
         serializer = TimeSerializer(queryset, many=True)
-        if my_username.is_superuser:
+        if User.is_superuser:
             return queryset.order_by('-created')
         else:
-            queryset = Timeoff.objects.all().filter(username=my_username)
+            queryset = Timeoff.objects.all().filter(username=self.request.username)
             return queryset.order_by('-created')
 
     def delete(self, request):
-        my_id = Timeoff.POST['id']
-        instance = Timeoff.objects.get(pk=my_id)
+        instance = Timeoff.objects.get(pk=self.request.id)
         instance.delete()
-        return HttpResponse("Deleted!")
+        return HttpResponse("Deleted!!")
