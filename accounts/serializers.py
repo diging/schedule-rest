@@ -11,7 +11,6 @@ class UserSerializer(serializers.ModelSerializer):
 		user = User.objects.create(
 			email=validated_data['email'],
 			first_name=validated_data['first_name'],
-			middle_name=validated_data['middle_name'],
             last_name=validated_data['last_name'],
 		)
 		user.set_password(validated_data['password'])
@@ -21,7 +20,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = get_user_model()
-		fields = ('id','email', 'first_name', 'middle_name', 'last_name', 'password') 
+		fields = ('id','email', 'first_name', 'last_name', 'password') 
 
 
 

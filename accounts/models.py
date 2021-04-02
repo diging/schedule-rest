@@ -56,7 +56,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 		unique=True,
 	)
 	first_name = models.CharField(max_length=40, null=True, blank=True)
-	middle_name = models.CharField(max_length=150, null=True, blank=True)
 	last_name = models.CharField(max_length=140, null=True, blank=True)
 	date_joined = models.DateTimeField(default=timezone.now)
 	is_active = models.BooleanField(default=True)
