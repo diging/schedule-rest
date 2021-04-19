@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.serializers import Serializer
 from .models import Schedule, Availability
-from .serializers import ScheduleSerializer, AvailabilitySerializer
+from .serializers import ScheduleSerializer, AvailabilitySerializer, MaxHoursSerializer
 from rest_framework.response import Response
 from rest_framework import viewsets, status
 from rest_framework.decorators import api_view
@@ -68,31 +68,37 @@ def list_user_schedules(request):
 
 @api_view(['POST'])
 def create_availability(request):
-	serializer = AvailabilitySerializer(data=request.data)
-	if serializer.is_valid():
+	serializer = AvailabilitySerializer(data=request.data['schedule'])
+	max_hours_serializer = MaxHoursSerializer(data={'maxHours': request.data['maxHours']})
+	print('hit')
+	print(max_hours_serializer)
+	print(request.data['maxHours'])
+	print(serializer.is_valid())
+	print(max_hours_serializer.is_valid())
+	if serializer.is_valid() and max_hours_serializer.is_valid():
 		Availability.objects.create(
 			user =request.user,
-			mon_start_1 = serializer.validated_data['mon_start_1'],
-			mon_end_1 = serializer.validated_data['mon_end_1'],
-			mon_start_2 = serializer.validated_data['mon_start_2'],
-			mon_end_2 = serializer.validated_data['mon_end_2'],
-			tue_start_1 = serializer.validated_data['tue_start_1'],
-			tue_end_1 = serializer.validated_data['tue_end_1'],
-			tue_start_2 = serializer.validated_data['tue_start_2'],
-			tue_end_2 = serializer.validated_data['tue_end_2'],
-			wed_start_1 = serializer.validated_data['wed_start_1'],
-			wed_end_1 = serializer.validated_data['wed_end_1'],
-			wed_start_2 = serializer.validated_data['wed_start_2'],
-			wed_end_2 = serializer.validated_data['wed_end_2'],
-			thur_start_1 = serializer.validated_data['thur_start_1'],
-			thur_end_1 = serializer.validated_data['thur_end_1'],
-			thur_start_2 = serializer.validated_data['thur_start_2'],
-			thur_end_2 = serializer.validated_data['thur_end_2'],
-			fri_start_1 = serializer.validated_data['fri_start_1'],
-			fri_end_1 = serializer.validated_data['fri_end_1'],
-			fri_start_2 = serializer.validated_data['fri_start_2'],
-			fri_end_2 = serializer.validated_data['fri_end_2'],
-			max_hours = serializer.validated_data['max_hours']
+			mon_start_1 = serializer.validated_data['Monday']['startTime1'],
+			mon_end_1 = serializer.validated_data['Monday']['endTime1'],
+			mon_start_2 = serializer.validated_data['Monday']['startTime2'],
+			mon_end_2 = serializer.validated_data['Monday']['endTime2'],
+			tue_start_1 = serializer.validated_data['Tuesday']['startTime1'],
+			tue_end_1 = serializer.validated_data['Tuesday']['endTime1'],
+			tue_start_2 = serializer.validated_data['Tuesday']['startTime2'],
+			tue_end_2 = serializer.validated_data['Tuesday']['endTime2'],
+			wed_start_1 = serializer.validated_data['Wednesday']['startTime1'],
+			wed_end_1 = serializer.validated_data['Wednesday']['endTime1'],
+			wed_start_2 = serializer.validated_data['Wednesday']['startTime2'],
+			wed_end_2 = serializer.validated_data['Wednesday']['endTime2'],
+			thur_start_1 = serializer.validated_data['Thursday']['startTime1'],
+			thur_end_1 = serializer.validated_data['Thursday']['endTime1'],
+			thur_start_2 = serializer.validated_data['Thursday']['startTime2'],
+			thur_end_2 = serializer.validated_data['Thursday']['endTime2'],
+			fri_start_1 = serializer.validated_data['Friday']['startTime1'],
+			fri_end_1 = serializer.validated_data['Friday']['endTime1'],
+			fri_start_2 = serializer.validated_data['Friday']['startTime2'],
+			fri_end_2 = serializer.validated_data['Friday']['endTime2'],
+			max_hours = max_hours_serializer.validated_data['maxHours']
 		)
 		return Response(status=status.HTTP_201_CREATED)
 	return Response(status=status.HTTP_400_BAD_REQUEST)
