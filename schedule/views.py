@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.serializers import Serializer
 from .models import Schedule, Availability
-from .serializers import ScheduleSerializer, AvailabilitySerializer, MaxHoursSerializer
+from .serializers import AvailabilityListSerializer, ScheduleSerializer, AvailabilitySerializer, MaxHoursSerializer
 from rest_framework.response import Response
 from rest_framework import viewsets, status
 from rest_framework.decorators import api_view
@@ -70,11 +70,6 @@ def list_user_schedules(request):
 def create_availability(request):
 	serializer = AvailabilitySerializer(data=request.data['schedule'])
 	max_hours_serializer = MaxHoursSerializer(data={'maxHours': request.data['maxHours']})
-	print('hit')
-	print(max_hours_serializer)
-	print(request.data['maxHours'])
-	print(serializer.is_valid())
-	print(max_hours_serializer.is_valid())
 	if serializer.is_valid() and max_hours_serializer.is_valid():
 		Availability.objects.create(
 			user =request.user,
@@ -107,7 +102,7 @@ def create_availability(request):
 @api_view(['GET'])
 def list_availabilities(request):
 		availabilities = Availability.objects.all()
-		Serializer = AvailabilitySerializer(availabilities, many=True)
+		Serializer = AvailabilityListSerializer(availabilities, many=True)
 		return Response(Serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
