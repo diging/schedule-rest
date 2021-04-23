@@ -1,17 +1,14 @@
-from .models import Timeoff
-from .serializers import TimeoffSerializer
 from rest_framework import viewsets, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+
+from .models import Timeoff
+from .serializers import TimeoffSerializer
 
 
 class TimeoffViewSet(viewsets.ModelViewSet):
 	queryset = Timeoff.objects.all()
 	serializer_class = TimeoffSerializer
-
-	def patch(self, request, *args, **kwargs):
-		print("entered")
-		return
 
 
 @api_view(['GET'])
