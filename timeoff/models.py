@@ -1,6 +1,4 @@
 from django.db import models
-from datetime import datetime, date
-from django.utils import timezone
 from accounts.models import User
 
 
@@ -13,3 +11,4 @@ class Timeoff(models.Model):
 	submission_date = models.DateTimeField(auto_now=True)
 	status = models.CharField(max_length=9)
 	approved_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='approved_by')
+	type = models.CharField(max_length=30)
