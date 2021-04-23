@@ -31,6 +31,7 @@ urlpatterns = [
 	path('admin/', admin.site.urls),
 	path('api/v1/accounts/', include('accounts.urls', namespace='accounts')),
 	path('api/v1/schedules/', include('schedule.urls', namespace='schedules')),
+	path('api/v1/timeoff/', include('timeoff.urls', namespace='timeoff')),
 	path('login/', auth_views.LoginView.as_view(template_name="accounts/login.html")),
 	path('api/v1/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
 	path('api/v1/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
