@@ -14,5 +14,7 @@ class TimeoffPostSerializer(serializers.ModelSerializer):
 			'to_date',
 			'from_date',
 			'description',
-			'timeoff_type'
+			'timeoff_type',
+			'start_time',
+			'end_time',
 		]

@@ -38,9 +38,12 @@ def submit_timeoff_view(request):
 			from_date = serializer.validated_data['from_date'],
 			description = serializer.validated_data['description'],
 			status = 'pending',
-			timeoff_type = serializer.validated_data['timeoff_type']
+			timeoff_type = serializer.validated_data['timeoff_type'],
+			start_time = serializer.validated_data.get('start_time'),
+			end_time = serializer.validated_data.get('end_time'),
 		)
 		return Response(status=status.HTTP_201_CREATED)
+	print(serializer.errors)
 	return Response(status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['PATCH'])
