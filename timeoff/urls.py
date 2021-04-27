@@ -1,10 +1,7 @@
 from django.urls import path
 from rest_framework import routers
 
-from .views import list_all_timeoff_requests
-from .views import list_user_timeoff_requests
-from .views import submit_timeoff_view
-from .views import review_user_timeoff_request
+from .views import list_all_timeoff_requests, list_user_timeoff_requests, submit_timeoff_view, review_user_timeoff_request
 
 app_name = 'timeoff'
 
