@@ -14,5 +14,5 @@ urlpatterns = [
 	path('user/', list_user_timeoff_requests, name='list_user_timeoff_requests'),
 	path('all/', list_all_timeoff_requests, name='list_all_timeoff_requests'),
 	path('create/', submit_timeoff_view, name='submit_timeoff_view'),
-	path('<int:pk>' + '/review_user_request/', review_user_timeoff_request, name='review_user_timeoff_request')
+	path('<int:pk>' + '/review_user_timeoff_request/', review_user_timeoff_request, name='review_user_timeoff_request')
 ]
