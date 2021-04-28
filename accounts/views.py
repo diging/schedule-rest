@@ -4,13 +4,13 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from accounts.models import User
 from .forms import SignupForm
-from .serializers import UserInfoSerializer, UserSerializer
+from .serializers import UserInfoSerializer, UserSerializer, UserSerializerAdminAccess
 
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
 from rest_framework import status
 from datetime import date
@@ -46,3 +46,33 @@ def user_search(request):
 		return Response(serializer.data, status=status.HTTP_200_OK)
 	else:
 		return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['POST'])
+@permission_classes([IsAdminUser])
+def create_user(request):
+	serializer = UserSerializerAdminAccess(data=request.data)
+	if serializer.is_valid():
+		serializer.save()
+		return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+	print(serializer.errors)
+	return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['PATCH'])
+@permission_classes([IsAdminUser])
+def update_user(request, pk):
+	user = get_object_or_404(User, id=pk)
+	serializer = UserSerializerAdminAccess(user, data=request.data, partial=True)
+	if serializer.is_valid():
+		serializer.save()
+		return Response(serializer.data, status=status.HTTP_200_OK)
+	return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAdminUser])
+def delete_user(request, pk):
+	user = get_object_or_404(User, id=pk)
+	User.objects.filter(user=user).delete()
+	return Response(status=status.HTTP_200_OK)
