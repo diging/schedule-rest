@@ -43,7 +43,6 @@ def submit_timeoff_view(request):
 			end_time = serializer.validated_data.get('end_time'),
 		)
 		return Response(status=status.HTTP_201_CREATED)
-	print(serializer.errors)
 	return Response(status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['PATCH'])
