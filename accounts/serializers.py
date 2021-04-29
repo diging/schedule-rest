@@ -31,6 +31,7 @@ class UserInfoSerializer(serializers.ModelSerializer):
     def get_full_name(self, obj):
         return obj.first_name + " " + obj.last_name
 
+
 class UserInfoTransSerializer(serializers.Serializer):
     full_name = serializers.SerializerMethodField()
     first_name = serializers.CharField(max_length=200)
@@ -51,7 +52,7 @@ class UserSerializerAdminAccess(serializers.ModelSerializer):
 		if not is_active:
 			is_active = True
 		else:
-			is_active = True
+			is_active = is_active
 		if not is_staff:
 			is_staff = False
 		else:
