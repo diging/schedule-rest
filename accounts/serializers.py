@@ -31,7 +31,6 @@ class UserInfoSerializer(serializers.ModelSerializer):
     def get_full_name(self, obj):
         return obj.first_name + " " + obj.last_name
 
-
 class UserInfoTransSerializer(serializers.Serializer):
     full_name = serializers.SerializerMethodField()
     first_name = serializers.CharField(max_length=200)
@@ -41,7 +40,6 @@ class UserInfoTransSerializer(serializers.Serializer):
 
     def get_full_name(self, obj):
         return obj.first_name + " " + obj.last_name
-
 
 class UserSerializerAdminAccess(serializers.ModelSerializer):
 	password = serializers.CharField(write_only=True)
