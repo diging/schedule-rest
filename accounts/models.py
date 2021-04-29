@@ -58,8 +58,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 	first_name = models.CharField(max_length=40, null=True, blank=True)
 	last_name = models.CharField(max_length=140, null=True, blank=True)
 	date_joined = models.DateTimeField(default=timezone.now)
-	is_active = models.BooleanField(default=True)
-	is_staff = models.BooleanField(default=False)
+	is_active = models.BooleanField(default=True, null=True, blank=True)
+	is_staff = models.BooleanField(default=False, null=True, blank=True)
 
 	objects = UserManager()
 
@@ -87,8 +87,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 		# Simplest possible answer: Yes, always
 		return True
 
-	@property
-	def is_staff(self):
-		"Is the user a member of staff?"
-		# Simplest possible answer: All admins are staff
-		return self.is_superuser
+	# @property
+	# def is_staff(self):
+	# 	"Is the user a member of staff?"
+	# 	# Simplest possible answer: All admins are staff
+	# 	return self.is_superuser

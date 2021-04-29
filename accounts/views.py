@@ -55,7 +55,6 @@ def create_user(request):
 	if serializer.is_valid():
 		serializer.save()
 		return Response(data=serializer.data, status=status.HTTP_201_CREATED)
-	print(serializer.errors)
 	return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -74,5 +73,5 @@ def update_user(request, pk):
 @permission_classes([IsAdminUser])
 def delete_user(request, pk):
 	user = get_object_or_404(User, id=pk)
-	User.objects.filter(user=user).delete()
+	User.objects.filter(id=user.id).delete()
 	return Response(status=status.HTTP_200_OK)

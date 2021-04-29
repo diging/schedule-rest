@@ -45,14 +45,28 @@ class UserInfoTransSerializer(serializers.Serializer):
 class UserSerializerAdminAccess(serializers.ModelSerializer):
 	password = serializers.CharField(write_only=True)
 	def create(self, validated_data):
-		for k,v in validated_data.items():
-			print(k,v)
+		is_active = validated_data.get('is_active')
+		is_staff = validated_data.get('is_staff')
+		is_superuser = validated_data.get('is_superuser')
+		if not is_active:
+			is_active = True
+		else:
+			is_active = True
+		if not is_staff:
+			is_staff = False
+		else:
+			is_staff = is_staff
+		if not is_superuser:
+			is_superuser = False
+		else:
+			is_superuser = is_superuser
 		user = User.objects.create(
 			email=validated_data['email'],
 			first_name=validated_data['first_name'],
             last_name=validated_data['last_name'],
-            is_active=validated_data.get('is_active'),
-            is_staff=validated_data.get('is_staff'),
+            is_active=is_active,
+            is_staff=is_staff,
+			is_superuser=is_superuser,
 		)
 		user.set_password(validated_data['password'])
 		user.save()
@@ -60,4 +74,4 @@ class UserSerializerAdminAccess(serializers.ModelSerializer):
 
 	class Meta:
 		model = get_user_model()
-		fields = ('id','email', 'first_name', 'last_name', 'password', 'date_joined', 'is_active', 'is_staff')
+		fields = ('id', 'email', 'first_name', 'last_name', 'password','is_superuser', 'date_joined', 'is_active', 'is_staff')
