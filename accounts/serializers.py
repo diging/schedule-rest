@@ -23,6 +23,7 @@ class UserSerializer(serializers.ModelSerializer):
 		fields = ('id','email', 'first_name', 'last_name', 'password') 
 
 
+
 class UserInfoSerializer(serializers.ModelSerializer):
     full_name = serializers.SerializerMethodField()
     class Meta:
