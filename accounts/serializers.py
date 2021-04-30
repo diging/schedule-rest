@@ -12,6 +12,8 @@ class UserSerializer(serializers.ModelSerializer):
 			email=validated_data['email'],
 			first_name=validated_data['first_name'],
             last_name=validated_data['last_name'],
+			is_staff=validated_data.get('is_staff', False),
+			is_superuser=validated_data.get('is_superuser', False),
 		)
 		user.set_password(validated_data['password'])
 		user.save()
@@ -20,7 +22,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = get_user_model()
-		fields = ('id','email', 'first_name', 'last_name', 'password') 
+		fields = ('id','email', 'first_name', 'last_name', 'password', 'is_staff', 'is_superuser')
 
 
 
@@ -53,7 +55,6 @@ class UserSerializerAdminAccess(serializers.ModelSerializer):
 			email=validated_data['email'],
 			first_name=validated_data['first_name'],
             last_name=validated_data['last_name'],
-            is_active=validated_data.get(is_active, True),
             is_staff=validated_data.get(is_staff, False),
 			is_superuser=validated_data.get(is_superuser, False),
 		)
