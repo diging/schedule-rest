@@ -28,7 +28,7 @@ class UserInfoSerializer(serializers.ModelSerializer):
     full_name = serializers.SerializerMethodField()
     class Meta:
         model = get_user_model()
-        fields = ('id','email', 'first_name', 'last_name', 'full_name') 
+        fields = ('id','email', 'first_name', 'last_name', 'full_name')
     def get_full_name(self, obj):
         return obj.first_name + " " + obj.last_name
 
@@ -49,25 +49,13 @@ class UserSerializerAdminAccess(serializers.ModelSerializer):
 		is_active = validated_data.get('is_active')
 		is_staff = validated_data.get('is_staff')
 		is_superuser = validated_data.get('is_superuser')
-		if not is_active:
-			is_active = True
-		else:
-			is_active = is_active
-		if not is_staff:
-			is_staff = False
-		else:
-			is_staff = is_staff
-		if not is_superuser:
-			is_superuser = False
-		else:
-			is_superuser = is_superuser
 		user = User.objects.create(
 			email=validated_data['email'],
 			first_name=validated_data['first_name'],
             last_name=validated_data['last_name'],
-            is_active=is_active,
-            is_staff=is_staff,
-			is_superuser=is_superuser,
+            is_active=validated_data.get(is_active, True),
+            is_staff=validated_data.get(is_staff, False),
+			is_superuser=validated_data.get(is_superuser, False),
 		)
 		user.set_password(validated_data['password'])
 		user.save()
