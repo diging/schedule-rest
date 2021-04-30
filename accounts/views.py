@@ -75,3 +75,10 @@ def delete_user(request, pk):
 	user = get_object_or_404(User, id=pk)
 	User.objects.filter(id=user.id).delete()
 	return Response(status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def get_current_user(request):
+	user = get_object_or_404(User, id=request.user.id)
+	serializer = UserSerializerAdminAccess(user)
+	return Response(serializer.data, status=status.HTTP_200_OK)
