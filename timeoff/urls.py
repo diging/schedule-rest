@@ -1,13 +1,12 @@
-from django.urls import path, include
+from django.urls import include, path
 from rest_framework import routers
 
-from . import views
-from .views import list_all_timeoff_requests, list_user_timeoff_requests, submit_timeoff_view, review_user_timeoff_request, TimeoffViewSet
+from .views import TimeoffViewSet, list_all_timeoff_requests, list_user_timeoff_requests, submit_timeoff_view, review_user_timeoff_request
 
 app_name = 'timeoff'
 
 router = routers.SimpleRouter()
-router.register(r'timeoff', views.TimeoffViewSet)
+router.register(r'timeoff', TimeoffViewSet, basename="timeoff")
 
 urlpatterns = [
 	path('', include(router.urls)),
