@@ -33,6 +33,16 @@ class BaseSchedule(models.Model):
 
 class Availability(BaseSchedule):
 	max_hours = models.DecimalField(max_digits=4, decimal_places=2)
+	STATUS_CHOICES = [
+		(0, 'Pending'),
+		(1, 'Approved'),
+		(2, 'Denied')
+	]
+	status = models.CharField(
+		max_length=8,
+		choices=STATUS_CHOICES,
+		default=0
+	)
 
 class Schedule(BaseSchedule):
 	total_hours = models.DecimalField(max_digits=4, decimal_places=2)
