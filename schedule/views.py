@@ -109,7 +109,7 @@ def list_availabilities(request):
 @api_view(['GET'])
 def list_user_availabilities(request):
 		availabilities = Availability.objects.filter(user=request.user)
-		Serializer = AvailabilitySerializer(availabilities, many=True)
+		Serializer = AvailabilityListSerializer(availabilities, many=True)
 		return Response(Serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
@@ -143,3 +143,11 @@ def create_schedules_auto(request):
 				setattr(schedule, attr, time(0,0))
 	schedule.save()
 	return Response(status=status.HTTP_200_OK)
+
+@api_view(['DELETE'])
+def delete_availability(request, pk):
+	avail = Availability.objects.get(id=pk)
+	if avail.status == '0' and (request.user == avail.user or request.user.is_superuser == True):
+		avail.delete()
+		return Response(status=status.HTTP_200_OK)
+	return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)

@@ -73,5 +73,6 @@ class AvailabilityListSerializer(serializers.ModelSerializer):
 		'fri_start_2',
 		'fri_end_2',
 		'created',
-		'max_hours'
+		'max_hours',
+		'status'
 		]
