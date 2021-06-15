@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.serializers import Serializer
 from .models import Schedule, Availability
-from .serializers import AvailabilityListSerializer, ScheduleSerializer, AvailabilitySerializer, MaxHoursSerializer
+from .serializers import AvailabilityListSerializer, AvailabilityPostSerializer, ScheduleSerializer, MaxHoursSerializer
 from rest_framework.response import Response
 from rest_framework import viewsets, status
 from rest_framework.decorators import api_view
@@ -69,10 +69,10 @@ def list_user_schedules(request):
 
 @api_view(['POST'])
 def create_availability(request):
-	serializer = AvailabilitySerializer(data=request.data['schedule'])
+	serializer = AvailabilityPostSerializer(data=request.data['schedule'])
 	max_hours_serializer = MaxHoursSerializer(data={'maxHours': request.data['maxHours']})
 	if serializer.is_valid() and max_hours_serializer.is_valid():
-		Availability.objects.create(
+		availability = Availability.objects.create(
 			user =request.user,
 			mon_start_1 = serializer.validated_data['Monday']['startTime1'],
 			mon_end_1 = serializer.validated_data['Monday']['endTime1'],
@@ -96,7 +96,8 @@ def create_availability(request):
 			fri_end_2 = serializer.validated_data['Friday']['endTime2'],
 			max_hours = max_hours_serializer.validated_data['maxHours']
 		)
-		return Response(status=status.HTTP_201_CREATED)
+		serializer = AvailabilityListSerializer(availability)
+		return Response(serializer.data, status=status.HTTP_201_CREATED)
 	return Response(status=status.HTTP_400_BAD_REQUEST)
 
 

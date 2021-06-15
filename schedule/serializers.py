@@ -36,7 +36,7 @@ class DaySerializer(serializers.Serializer):
 	startTime2 = serializers.TimeField()
 	endTime2 = serializers.TimeField()
 
-class AvailabilitySerializer(serializers.Serializer):
+class AvailabilityPostSerializer(serializers.Serializer):
 	Monday = DaySerializer()
 	Tuesday = DaySerializer()
 	Wednesday = DaySerializer()
