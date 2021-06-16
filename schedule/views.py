@@ -8,6 +8,7 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import api_view
 from accounts.models import User
 from datetime import datetime, date, timedelta, time
+from .utils import create_schedule
 
 # Create your views here.
 
@@ -26,7 +27,7 @@ class ScheduleViewset(viewsets.ViewSet):
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
-def create_schedule(request):
+def create_schedule2(request):
 	serializer = ScheduleSerializer(data=request.data)
 	if serializer.is_valid():
 		Schedule.objects.create(
@@ -164,6 +165,7 @@ def approve_availability(request, pk):
 		avail.approval_date = datetime.now()
 		avail.reason = serializer._validated_data['reason']
 		avail.save()
+		create_schedule(avail)
 		return Response(status=status.HTTP_200_OK)
 	else:
 		print(serializer.errors)
