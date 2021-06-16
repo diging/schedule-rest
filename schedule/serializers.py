@@ -79,3 +79,11 @@ class AvailabilityListSerializer(serializers.ModelSerializer):
 		'status',
 		'user'
 		]
+
+class AvailabilityUpdateSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Availability
+		fields = [
+			'status',
+			'reason'
+		]

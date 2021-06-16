@@ -26,7 +26,7 @@ class BaseSchedule(models.Model):
 	fri_end_1 = models.TimeField()
 	fri_start_2 = models.TimeField()
 	fri_end_2 = models.TimeField()
-	created = DateTimeField(auto_now=True)
+	created = DateTimeField(auto_now_add=True)
 
 	class Meta:
 		abstract = True
@@ -43,7 +43,7 @@ class Availability(BaseSchedule):
 		choices=STATUS_CHOICES,
 		default=0
 	)
-	update_date = DateTimeField(blank=True, null=True)
+	approval_date = DateTimeField(blank=True, null=True)
 	reason = TextField(blank=True)
 
 class Schedule(BaseSchedule):
