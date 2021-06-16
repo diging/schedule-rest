@@ -1,4 +1,4 @@
-from django.db.models.fields import DateTimeField
+from django.db.models.fields import DateTimeField, TextField
 from accounts.models import User
 from django.db import models
 from accounts.models import User
@@ -43,6 +43,8 @@ class Availability(BaseSchedule):
 		choices=STATUS_CHOICES,
 		default=0
 	)
+	update_date = DateTimeField(blank=True, null=True)
+	reason = TextField(blank=True)
 
 class Schedule(BaseSchedule):
 	total_hours = models.DecimalField(max_digits=4, decimal_places=2)

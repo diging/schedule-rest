@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Schedule, Availability
+from accounts.serializers import UserInfoSerializer
 
 class ScheduleSerializer(serializers.ModelSerializer):
 	class Meta:
@@ -48,6 +49,7 @@ class MaxHoursSerializer(serializers.Serializer):
 	maxHours = serializers.DecimalField(max_digits=4, decimal_places=2)
 
 class AvailabilityListSerializer(serializers.ModelSerializer):
+	user = UserInfoSerializer()
 	class Meta:
 		model = Availability
 
@@ -74,5 +76,6 @@ class AvailabilityListSerializer(serializers.ModelSerializer):
 		'fri_end_2',
 		'created',
 		'max_hours',
-		'status'
+		'status',
+		'user'
 		]

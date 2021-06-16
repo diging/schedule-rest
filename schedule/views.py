@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from rest_framework import response
 from rest_framework.serializers import Serializer
 from .models import Schedule, Availability
 from .serializers import AvailabilityListSerializer, AvailabilityPostSerializer, ScheduleSerializer, MaxHoursSerializer
@@ -150,5 +151,16 @@ def delete_availability(request, pk):
 	avail = Availability.objects.get(id=pk)
 	if avail.status == '0' and (request.user == avail.user or request.user.is_superuser == True):
 		avail.delete()
+		return Response(status=status.HTTP_200_OK)
+	return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+@api_view(['PATCH'])
+def approve_availability(request, pk):
+	avail = Availability.objects.get(id=pk)
+	if avail:
+		avail.status = request.data['status']
+		avail.update_date = datetime.now()
+		avail.reason = request.data['reason']
+		avail.save()
 		return Response(status=status.HTTP_200_OK)
 	return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
