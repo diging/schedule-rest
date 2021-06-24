@@ -120,7 +120,7 @@ def create_schedules_auto(request):
 	availability =  Availability.objects.get(id=5)
 	schedule = Schedule()
 	time_increments_left = float(availability.max_hours) / .25
-
+	scheduled_increments = 0
 	availability_iterable = iter(vars(availability).items())
 	for attr, value in availability_iterable:
 		if 'start' in attr: 
@@ -133,17 +133,22 @@ def create_schedules_auto(request):
 				setattr(schedule, start_day, start)
 				setattr(schedule, attr, value)
 				time_increments_left -= current_increments
+				scheduled_increments += current_increments
 			elif time_increments_left > 0:
 				setattr(schedule, start_day, start)
 				minutes_left = time_increments_left * 15
 				duration = datetime.combine(date.today(), start) + timedelta(minutes=minutes_left)
+				scheduled_increments += time_increments_left
 				setattr(schedule, attr, duration.time())
-				schedule.total_hours = availability.max_hours
+				# this needs to be fixed
 				schedule.user = availability.user
 				time_increments_left = 0
 			else:
 				setattr(schedule, start_day, time(0,0))
 				setattr(schedule, attr, time(0,0))
+	hours = divmod(scheduled_increments, 4)
+	left_over = hours[1] * .25
+	schedule.total_hours = hours[0] + left_over
 	schedule.save()
 	return Response(status=status.HTTP_200_OK)
 
