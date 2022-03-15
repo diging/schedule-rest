@@ -1,4 +1,4 @@
-from django.db.models.fields import DateTimeField
+from django.db.models.fields import DateTimeField, TextField
 from accounts.models import User
 from django.db import models
 from accounts.models import User
@@ -26,13 +26,25 @@ class BaseSchedule(models.Model):
 	fri_end_1 = models.TimeField()
 	fri_start_2 = models.TimeField()
 	fri_end_2 = models.TimeField()
-	created = DateTimeField(auto_now=True)
+	created = DateTimeField(auto_now_add=True)
 
 	class Meta:
 		abstract = True
 
 class Availability(BaseSchedule):
 	max_hours = models.DecimalField(max_digits=4, decimal_places=2)
+	STATUS_CHOICES = [
+		(0, 'Pending'),
+		(1, 'Approved'),
+		(2, 'Denied')
+	]
+	status = models.CharField(
+		max_length=8,
+		choices=STATUS_CHOICES,
+		default=0
+	)
+	approval_date = DateTimeField(blank=True, null=True)
+	reason = TextField(blank=True)
 
 class Schedule(BaseSchedule):
 	total_hours = models.DecimalField(max_digits=4, decimal_places=2)

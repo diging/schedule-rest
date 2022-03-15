@@ -62,3 +62,4 @@ docs/_build/
 target/
 
 sample.json
+sched.code-workspace
