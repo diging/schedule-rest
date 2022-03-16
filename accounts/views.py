@@ -17,6 +17,7 @@ from datetime import date
 from rest_framework_simplejwt.views import TokenObtainPairView
 # Create your views here.
 
+
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def signup(request):
@@ -48,7 +49,29 @@ def user_search(request):
 	else:
 		return Response(status=status.HTTP_404_NOT_FOUND)
 
+
 @api_view(['GET'])
 def user_info(request):
 	serializer = UserInfoSerializer(request.user)
 	return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def users_list(request):
+	users = User.objects.all()
+	Serializer = UserInfoSerializer(users, many=True)
+	return Response(Serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['PATCH'])
+@permission_classes([AllowAny])
+def update_user_role(request, pk):
+	user = User.objects.get(id=pk)
+	serializer = UserInfoSerializer(data=request.data)
+	if serializer.is_valid() and user:
+		user.is_superuser = serializer._validated_data['is_superuser']
+		user.save()
+		return Response(status=status.HTTP_200_OK)
+	else:
+		print(serializer.errors)
+		return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
