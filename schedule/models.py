@@ -2,6 +2,8 @@ from django.db.models.fields import DateTimeField, TextField
 from accounts.models import User
 from django.db import models
 from accounts.models import User
+from django.db import models
+import jsonfield
 # Create your models here.
 
 class BaseSchedule(models.Model):
@@ -33,6 +35,7 @@ class BaseSchedule(models.Model):
 
 class Availability(BaseSchedule):
 	max_hours = models.DecimalField(max_digits=4, decimal_places=2)
+	availabilities = jsonfield.JSONField()
 	STATUS_CHOICES = [
 		(0, 'Pending'),
 		(1, 'Approved'),

@@ -53,7 +53,8 @@ class AvailabilityListSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Availability
 
-		fields = ['id', 
+		fields = ['id',
+		'availabilities',
 		'mon_start_1',
 		'mon_end_1',
 		'mon_start_2',
