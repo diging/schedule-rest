@@ -1,16 +1,10 @@
 from django.db import models
-
-# Create your models here.
+from django.utils import timezone
 from django.contrib.auth.models import (
 	AbstractBaseUser,
 	BaseUserManager,
 	PermissionsMixin
 )
-from django.db import models
-from django.utils import timezone
-import binascii
-import os
-from django.conf import settings
 
 class UserManager(BaseUserManager):
 	def create_user(self, email, first_name, last_name, password):
@@ -21,13 +15,11 @@ class UserManager(BaseUserManager):
 		if not email:
 			raise ValueError('Users must have an email address')
 
-
 		user = self.model(
 			email=self.normalize_email(email),
 			first_name = first_name,
 			last_name = last_name,
 		)
-
 		user.set_password(password)
 		user.save()
 		return user
@@ -48,7 +40,6 @@ class UserManager(BaseUserManager):
 		user.save()
 		return user
 
-
 class User(AbstractBaseUser, PermissionsMixin):
 	email = models.EmailField(
 		verbose_name='email address',
@@ -60,6 +51,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 	date_joined = models.DateTimeField(default=timezone.now)
 	is_active = models.BooleanField(default=True)
 	is_staff = models.BooleanField(default=False)
+	is_superuser = models.BooleanField(default=False)
 
 	objects = UserManager()
 
@@ -86,9 +78,3 @@ class User(AbstractBaseUser, PermissionsMixin):
 		"Does the user have permissions to view the app `app_label`?"
 		# Simplest possible answer: Yes, always
 		return True
-
-	# @property
-	# def is_staff(self):
-	# 	"Is the user a member of staff?"
-	# 	# Simplest possible answer: All admins are staff
-	# 	return self.is_superuser

@@ -1,21 +1,11 @@
-from django.shortcuts import render, get_object_or_404
-from django.contrib.auth import authenticate, get_user_model
-from django.http import HttpResponseRedirect, HttpResponse
-from django.urls import reverse
+from django.shortcuts import get_object_or_404
 from accounts.models import User
-from .forms import SignupForm
 from .serializers import UserInfoSerializer, UserSerializer, UserSerializerAdminAccess
-
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
 from rest_framework import status
-from datetime import date
-from rest_framework_simplejwt.views import TokenObtainPairView
-# Create your views here.
 
 @api_view(['POST'])
 @permission_classes([AllowAny])

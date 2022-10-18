@@ -8,12 +8,9 @@ urlpatterns = [
     path('signup', views.signup, name='signup'),
     path('users/search', views.user_search, name='user_search'),
     path('login', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
-<<<<<<< HEAD
     path('users/create', views.create_user, name='create_user'),
     path('users/' + '<int:pk>' + '/update', views.update_user, name='update_user'),
     path('users/' + '<int:pk>' + '/delete', views.delete_user, name='delete_user'),
     path('users/get_current_user', views.get_current_user, name='get_current_user'),
-=======
 	path('user/info/', views.user_info, name='user_info'),
->>>>>>> f7ba68b908857a98066d8ec539dc4ed185dab5ad
 ]
