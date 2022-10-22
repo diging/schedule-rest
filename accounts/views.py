@@ -31,13 +31,11 @@ def signup(request):
 
 @api_view(['GET'])
 def user_search(request):
-	email = request.GET.get('email', '')
-	user = User.objects.get(email=email)
+	user_email = request.GET.get('email', '')
+	user = get_object_or_404(email=user_email)
 	if user:
 		serializer = UserInfoSerializer(user)
 		return Response(serializer.data, status=status.HTTP_200_OK)
-	else:
-		return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['POST'])
@@ -91,7 +89,7 @@ def users_list(request):
 @api_view(['PATCH'])
 @permission_classes([AllowAny])
 def update_user_role(request, pk):
-	user = User.objects.get(id=pk)
+	user = get_object_or_404(User, id=pk)
 	serializer = UserInfoSerializer(data=request.data)
 	if serializer.is_valid() and user:
 		user.is_superuser = serializer._validated_data['is_superuser']
