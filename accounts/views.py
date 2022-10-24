@@ -6,6 +6,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
 from rest_framework import status
+from pprint import pprint
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -30,13 +31,11 @@ def signup(request):
 
 @api_view(['GET'])
 def user_search(request):
-	email = request.GET.get('email', '')
-	user = User.objects.get(email=email)
+	user_email = request.GET.get('email', '')
+	user = get_object_or_404(User, email=user_email)
 	if user:
 		serializer = UserInfoSerializer(user)
 		return Response(serializer.data, status=status.HTTP_200_OK)
-	else:
-		return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['POST'])
@@ -72,9 +71,31 @@ def delete_user(request, pk):
 def get_current_user(request):
 	user = get_object_or_404(User, id=request.user.id)
 	serializer = UserSerializerAdminAccess(user)
- 
+	return Response(serializer.data, status=status.HTTP_200_OK)
  
 @api_view(['GET'])
 def user_info(request):
 	serializer = UserInfoSerializer(request.user)
 	return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def users_list(request):
+	users = User.objects.all()
+	serializer = UserInfoSerializer(users, many=True)
+	return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['PATCH'])
+@permission_classes([AllowAny])
+def update_user_role(request, pk):
+	user = get_object_or_404(User, id=pk)
+	serializer = UserInfoSerializer(data=request.data)
+	if serializer.is_valid() and user:
+		user.is_superuser = serializer._validated_data['is_superuser']
+		user.save()
+		return Response(status=status.HTTP_200_OK)
+	else:
+		print(serializer.errors)
+		return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
