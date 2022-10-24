@@ -6,7 +6,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
 from rest_framework import status
-
+from pprint import pprint
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -32,7 +32,7 @@ def signup(request):
 @api_view(['GET'])
 def user_search(request):
 	user_email = request.GET.get('email', '')
-	user = get_object_or_404(email=user_email)
+	user = get_object_or_404(User, email=user_email)
 	if user:
 		serializer = UserInfoSerializer(user)
 		return Response(serializer.data, status=status.HTTP_200_OK)
@@ -71,7 +71,7 @@ def delete_user(request, pk):
 def get_current_user(request):
 	user = get_object_or_404(User, id=request.user.id)
 	serializer = UserSerializerAdminAccess(user)
- 
+	return Response(serializer.data, status=status.HTTP_200_OK)
  
 @api_view(['GET'])
 def user_info(request):
@@ -83,8 +83,9 @@ def user_info(request):
 @permission_classes([AllowAny])
 def users_list(request):
 	users = User.objects.all()
-	Serializer = UserInfoSerializer(users, many=True)
-	return Response(Serializer.data, status=status.HTTP_200_OK)
+	serializer = UserInfoSerializer(users, many=True)
+	return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 @api_view(['PATCH'])
 @permission_classes([AllowAny])

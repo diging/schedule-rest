@@ -1,6 +1,6 @@
 from django.test import TestCase, Client
 from django.urls import reverse
-from ..views import create_user, update_user, update_user_role, user_search, users_list
+from ..views import create_user, delete_user, get_current_user, signup, update_user, update_user_role, user_info, user_search, users_list
 from ..models import User
 from ..serializers import UserSerializer
 from rest_framework.test import APITestCase, force_authenticate, APIRequestFactory
@@ -10,11 +10,9 @@ import json
 
 factory = APIRequestFactory()
 
-#user = get_object_or_404(User, first_name='22222222')
-
 class ViewTest(APITestCase):
     def setUp(self):
-        self.new_user = User(first_name= 'Julian', last_name='Ophals', email='blank@asu.edu', is_staff=True, is_superuser=True, password='password')
+        self.new_user = User(first_name= 'Julian', last_name='Ophals', email='test@asu.edu', is_staff=True, is_superuser=True, password='password')
         self.json_user = {
             'first_name': self.new_user.first_name,
             'last_name': self.new_user.last_name,
@@ -27,10 +25,12 @@ class ViewTest(APITestCase):
         self.user_attributes = {
             'first_name': 'Julian',
             'last_name': 'Ophals',
-            'email': 'blank@asu.edu'
+            'email': 'test2@asu.edu',
+            'is_staff': True, 
+            'is_superuser': True
         }
 
-        self.user = User.objects.create(**self.json_user)
+        self.user = User.objects.create(**self.user_attributes)
         self.serializer = UserSerializer(instance=self.user)
 
     def tearDown(self):
@@ -42,14 +42,37 @@ class ViewTest(APITestCase):
         response = create_user(request)
         self.assertEqual(response.status_code, 201)
 
+    def test_delete_user(self):
+        request = factory.delete('delete_user')
+        force_authenticate(request, user=self.new_user)
+        response = delete_user(request, self.user.id)
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_current_user(self):
+        request = factory.get('get_current_user', self.serializer.data, format='json')
+        force_authenticate(request, user=self.user)
+        response = get_current_user(request)
+        self.assertEqual(response.status_code, 200)
+
+    def test_user_info(self):
+        request = factory.get('user_info', self.serializer.data, format='json')
+        force_authenticate(request, user=self.user)
+        response = user_info(request)
+        self.assertEqual(response.status_code, 200)
+
+    def test_signup(self):
+        request = factory.post('signup', self.json_user, format='json')
+        response = signup(request)
+        self.assertEqual(response.status_code, 201)
+
     def test_update_user(self):
-        request = factory.patch('/accounts/users/' + str(self.user.id) + '/update')
+        request = factory.patch('/accounts/users/' + str(self.user.id) + '/update', self.serializer.data, format='json')
         force_authenticate(request, user=self.user)
         response = update_user(request, self.user.id)
         self.assertEqual(response.status_code, 200)
+
     def test_update_user_role(self):
-        request = factory.patch('/accounts/users/' + str(self.user.id))
-        #force_authenticate(request, user=self.user)
+        request = factory.patch('/accounts/users/' + str(self.user.id), self.json_user, format='json')
         response = update_user_role(request, self.user.id)
         self.assertEqual(response.status_code, 200)
 
