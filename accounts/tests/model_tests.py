@@ -1,4 +1,3 @@
-from django.test import TestCase
 from ..models import UserManager, User
 from ..serializers import UserSerializer, UserInfoSerializer, UserInfoTransSerializer, UserSerializerAdminAccess
 import unittest

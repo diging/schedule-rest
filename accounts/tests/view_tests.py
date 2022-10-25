@@ -1,12 +1,7 @@
-from django.test import TestCase, Client
-from django.urls import reverse
 from ..views import create_user, delete_user, get_current_user, signup, update_user, update_user_role, user_info, user_search, users_list
 from ..models import User
 from ..serializers import UserSerializer
 from rest_framework.test import APITestCase, force_authenticate, APIRequestFactory
-from django.shortcuts import get_object_or_404
-from rest_framework.generics import get_object_or_404
-import json
 
 factory = APIRequestFactory()
 
@@ -26,7 +21,7 @@ class ViewTest(APITestCase):
             'first_name': 'Julian',
             'last_name': 'Ophals',
             'email': 'test2@asu.edu',
-            'is_staff': True, 
+            'is_staff': True,
             'is_superuser': True
         }
 
@@ -72,7 +67,7 @@ class ViewTest(APITestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_update_user_role(self):
-        request = factory.patch('/accounts/users/' + str(self.user.id), self.json_user, format='json')
+        request = factory.patch('/accounts/users/' + str(self.user.id), {'is_superuser': self.user.is_superuser}, format='json')
         response = update_user_role(request, self.user.id)
         self.assertEqual(response.status_code, 200)
 

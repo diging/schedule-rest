@@ -28,7 +28,8 @@ class UserInfoSerializer(serializers.ModelSerializer):
     full_name = serializers.SerializerMethodField()
     class Meta:
         model = get_user_model()
-        fields = ('id','email', 'first_name', 'last_name', 'full_name', 'is_superuser')
+        fields = ('id', 'email', 'first_name', 'last_name', 'full_name', 'is_superuser')
+        extra_kwargs = {'email': {'required': False}}
 
     def get_full_name(self, obj):
         return obj.first_name + " " + obj.last_name
