@@ -19,10 +19,10 @@ class ScheduleSerializer(serializers.ModelSerializer):
 		'wed_end_1',
 		'wed_start_2',
 		'wed_end_2',
-		'thur_start_1',
-		'thur_end_1',
-		'thur_start_2',
-		'thur_end_2',
+		'thu_start_1',
+		'thu_end_1',
+		'thu_start_2',
+		'thu_end_2',
 		'fri_start_1',
 		'fri_end_1',
 		'fri_start_2',
@@ -41,9 +41,16 @@ class AvailabilityPostSerializer(serializers.Serializer):
 	Monday = DaySerializer()
 	Tuesday = DaySerializer()
 	Wednesday = DaySerializer()
-	Thursday = DaySerializer()
+	Thursday = DaySerializer()                                                                      
 	Friday = DaySerializer()
-	
+
+class AvailabilityDayTimeStringsSerializer(serializers.Serializer):
+	day_times = serializers.ListField(
+		child = serializers.CharField(max_length=20)
+	)
+
+class AvailabilityUpdateDayTimesSerializer(serializers.Serializer):
+	day = DaySerializer()
 
 class MaxHoursSerializer(serializers.Serializer):
 	maxHours = serializers.DecimalField(max_digits=4, decimal_places=2)
@@ -66,10 +73,10 @@ class AvailabilityListSerializer(serializers.ModelSerializer):
 		'wed_end_1',
 		'wed_start_2',
 		'wed_end_2',
-		'thur_start_1',
-		'thur_end_1',
-		'thur_start_2',
-		'thur_end_2',
+		'thu_start_1',
+		'thu_end_1',
+		'thu_start_2',
+		'thu_end_2',
 		'fri_start_1',
 		'fri_end_1',
 		'fri_start_2',
