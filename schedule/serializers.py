@@ -3,6 +3,8 @@ from .models import Schedule, Availability
 from accounts.serializers import UserInfoSerializer
 
 class ScheduleSerializer(serializers.ModelSerializer):
+	user = UserInfoSerializer()
+
 	class Meta:
 		model = Schedule
 
@@ -28,7 +30,8 @@ class ScheduleSerializer(serializers.ModelSerializer):
 		'fri_start_2',
 		'fri_end_2',
 		'created',
-		'total_hours'
+		'total_hours',
+		'user'
 		]
 
 class DaySerializer(serializers.Serializer):
@@ -60,7 +63,7 @@ class AvailabilityListSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Availability
 
-		fields = ['id', 
+		fields = ['id',
 		'mon_start_1',
 		'mon_end_1',
 		'mon_start_2',

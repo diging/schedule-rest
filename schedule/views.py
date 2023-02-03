@@ -9,6 +9,9 @@ from rest_framework.decorators import api_view
 from accounts.models import User
 from datetime import datetime, date, timedelta, time
 from .utils import create_schedule
+import json
+from django.forms.models import model_to_dict
+from django.contrib import messages
 
 # Create your views here.
 
@@ -28,10 +31,10 @@ class ScheduleViewset(viewsets.ViewSet):
 
 @api_view(['POST'])
 def create_schedule2(request):
-	serializer = ScheduleSerializer(data=request.data)
+	serializer = ScheduleSerializer(data=json.loads(request.data['schedule']))
 	if serializer.is_valid():
 		Schedule.objects.create(
-			user =request.user,
+			user = request.user,
 			mon_start_1 = serializer.validated_data['mon_start_1'],
 			mon_end_1 = serializer.validated_data['mon_end_1'],
 			mon_start_2 = serializer.validated_data['mon_start_2'],
@@ -44,22 +47,23 @@ def create_schedule2(request):
 			wed_end_1 = serializer.validated_data['wed_end_1'],
 			wed_start_2 = serializer.validated_data['wed_start_2'],
 			wed_end_2 = serializer.validated_data['wed_end_2'],
-			thu_start_1 = serializer.validated_data['thur_start_1'],
-			thu_end_1 = serializer.validated_data['thur_end_1'],
-			thu_start_2 = serializer.validated_data['thur_start_2'],
-			thu_end_2 = serializer.validated_data['thur_end_2'],
+			thu_start_1 = serializer.validated_data['thu_start_1'],
+			thu_end_1 = serializer.validated_data['thu_end_1'],
+			thu_start_2 = serializer.validated_data['thu_start_2'],
+			thu_end_2 = serializer.validated_data['thu_end_2'],
 			fri_start_1 = serializer.validated_data['fri_start_1'],
 			fri_end_1 = serializer.validated_data['fri_end_1'],
 			fri_start_2 = serializer.validated_data['fri_start_2'],
 			fri_end_2 = serializer.validated_data['fri_end_2'],
 			total_hours = serializer.validated_data['total_hours']
 		)
-		return Response(status=status.HTTP_201_CREATED)
+		return Response(serializer.data, status=status.HTTP_201_CREATED)
 	return Response(status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
 def list_schedules(request):
 		schedules = Schedule.objects.all()
+		print(vars(schedules).items())
 		Serializer = ScheduleSerializer(schedules, many=True)
 		return Response(Serializer.data, status=status.HTTP_200_OK)
 
@@ -72,11 +76,10 @@ def list_user_schedules(request):
 @api_view(['POST'])
 def create_availability(request):
 	serializer = AvailabilityPostSerializer(data=request.data['schedule'])
-	print(serializer)
 	max_hours_serializer = MaxHoursSerializer(data={'maxHours': request.data['maxHours']})
 	if serializer.is_valid() and max_hours_serializer.is_valid():
 		availability = Availability.objects.create(
-			user =request.user,
+			user = request.user,
 			mon_start_1 = serializer.validated_data['Monday']['startTime1'],
 			mon_end_1 = serializer.validated_data['Monday']['endTime1'],
 			mon_start_2 = serializer.validated_data['Monday']['startTime2'],
@@ -115,9 +118,9 @@ def list_user_availabilities(request):
 		Serializer = AvailabilityListSerializer(availabilities, many=True)
 		return Response(Serializer.data, status=status.HTTP_200_OK)
 
-@api_view(['GET'])
-def create_schedules_auto(request):
-	availability =  Availability.objects.get(id=5)
+@api_view(['PATCH'])
+def create_schedules_auto(request, pk):
+	availability = Availability.objects.get(id=pk)
 	schedule = Schedule()
 	time_increments_left = float(availability.max_hours) / .25
 	scheduled_increments = 0
@@ -130,26 +133,36 @@ def create_schedules_auto(request):
 			duration = datetime.combine(date.today(), value) - datetime.combine(date.today(), start)
 			current_increments = duration / timedelta(minutes=15)
 			if current_increments < time_increments_left:
+				print('1111: {}'.format(start_day))
 				setattr(schedule, start_day, start)
 				setattr(schedule, attr, value)
 				time_increments_left -= current_increments
 				scheduled_increments += current_increments
 			elif time_increments_left > 0:
+				print('2222: {}'.format(start_day))
 				setattr(schedule, start_day, start)
 				minutes_left = time_increments_left * 15
 				duration = datetime.combine(date.today(), start) + timedelta(minutes=minutes_left)
 				scheduled_increments += time_increments_left
 				setattr(schedule, attr, duration.time())
 				# this needs to be fixed
-				schedule.user = availability.user
+				#schedule.user = availability.user
 				time_increments_left = 0
 			else:
+				print('3333: {}'.format(start_day))
 				setattr(schedule, start_day, time(0,0))
 				setattr(schedule, attr, time(0,0))
+	print('THU_1: {}'.format(schedule.thu_start_1))
+	print('THU_2: {}'.format(schedule.thu_end_1))
+	print('FRI_1: {}'.format(schedule.fri_start_1))
+	print('FRI_2: {}'.format(schedule.fri_end_1))
+	#schedule.user = availability.user
+	setattr(schedule, 'user', availability.user)
 	hours = divmod(scheduled_increments, 4)
 	left_over = hours[1] * .25
 	schedule.total_hours = hours[0] + left_over
-	schedule.save()
+	#schedule.save()
+	#schedule_serializer = ScheduleSerializer(schedule, many=False)
 	return Response(status=status.HTTP_200_OK)
 
 @api_view(['DELETE'])
@@ -164,7 +177,6 @@ def delete_availability(request, pk):
 def approve_availability(request, pk):
 	avail = Availability.objects.get(id=pk)
 	serializer = AvailabilityUpdateSerializer(data=request.data)
-	print(request.data)
 	if serializer.is_valid() and avail:
 		avail.status = serializer._validated_data['status']
 		avail.approval_date = datetime.now()

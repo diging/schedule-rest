@@ -1,7 +1,6 @@
 from django.db.models.fields import DateTimeField, TextField
 from accounts.models import User
 from django.db import models
-from accounts.models import User
 # Create your models here.
 
 class BaseSchedule(models.Model):
@@ -48,4 +47,3 @@ class Availability(BaseSchedule):
 
 class Schedule(BaseSchedule):
 	total_hours = models.DecimalField(max_digits=4, decimal_places=2)
-
