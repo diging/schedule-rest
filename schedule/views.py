@@ -8,7 +8,7 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import api_view
 from accounts.models import User
 from datetime import datetime, date, timedelta, time
-from .utils import create_schedule
+from .utils import create_schedule, check_hours
 import json
 from django.forms.models import model_to_dict
 from django.contrib import messages
@@ -63,7 +63,6 @@ def create_schedule2(request):
 @api_view(['GET'])
 def list_schedules(request):
 		schedules = Schedule.objects.all()
-		print(vars(schedules).items())
 		Serializer = ScheduleSerializer(schedules, many=True)
 		return Response(Serializer.data, status=status.HTTP_200_OK)
 
@@ -133,13 +132,11 @@ def create_schedules_auto(request, pk):
 			duration = datetime.combine(date.today(), value) - datetime.combine(date.today(), start)
 			current_increments = duration / timedelta(minutes=15)
 			if current_increments < time_increments_left:
-				print('1111: {}'.format(start_day))
 				setattr(schedule, start_day, start)
 				setattr(schedule, attr, value)
 				time_increments_left -= current_increments
 				scheduled_increments += current_increments
 			elif time_increments_left > 0:
-				print('2222: {}'.format(start_day))
 				setattr(schedule, start_day, start)
 				minutes_left = time_increments_left * 15
 				duration = datetime.combine(date.today(), start) + timedelta(minutes=minutes_left)
@@ -149,20 +146,12 @@ def create_schedules_auto(request, pk):
 				#schedule.user = availability.user
 				time_increments_left = 0
 			else:
-				print('3333: {}'.format(start_day))
 				setattr(schedule, start_day, time(0,0))
 				setattr(schedule, attr, time(0,0))
-	print('THU_1: {}'.format(schedule.thu_start_1))
-	print('THU_2: {}'.format(schedule.thu_end_1))
-	print('FRI_1: {}'.format(schedule.fri_start_1))
-	print('FRI_2: {}'.format(schedule.fri_end_1))
-	#schedule.user = availability.user
 	setattr(schedule, 'user', availability.user)
 	hours = divmod(scheduled_increments, 4)
 	left_over = hours[1] * .25
 	schedule.total_hours = hours[0] + left_over
-	#schedule.save()
-	#schedule_serializer = ScheduleSerializer(schedule, many=False)
 	return Response(status=status.HTTP_200_OK)
 
 @api_view(['DELETE'])
@@ -174,7 +163,7 @@ def delete_availability(request, pk):
 	return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
 @api_view(['PATCH'])
-def approve_availability(request, pk):
+def approve_schedule(request, pk):
 	avail = Availability.objects.get(id=pk)
 	serializer = AvailabilityUpdateSerializer(data=request.data)
 	if serializer.is_valid() and avail:
@@ -182,23 +171,28 @@ def approve_availability(request, pk):
 		avail.approval_date = datetime.now()
 		avail.reason = serializer._validated_data['reason']
 		avail.save()
-		create_schedule(avail)
-		return Response(status=status.HTTP_200_OK)
+		check_hours_results = check_hours(avail)
+		if check_hours_results[0]:
+			create_schedule(avail, check_hours_results[1])
+			return Response(status=status.HTTP_200_OK)
+		print("The schedule that you are trying to approve exceeds the maximum hours alotted, please adjust accordingly")
+		return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 	else:
 		print(serializer.errors)
 		return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
 @api_view(['PATCH'])
-def update_availability(request):
+def update_availability(request, pk):
 	sched_times_serializer = AvailabilityUpdateDayTimesSerializer(data={'day': request.data['sched_times']})
 	day_time_strings_serializer = AvailabilityDayTimeStringsSerializer(data={'day_times': request.data['time_strings']})
 	if sched_times_serializer.is_valid() and day_time_strings_serializer.is_valid():
-		latest_avail = Availability.objects.latest('created')
-		setattr(latest_avail, day_time_strings_serializer.validated_data['day_times'][0], sched_times_serializer.validated_data['day']['startTime1'])
-		setattr(latest_avail, day_time_strings_serializer.validated_data['day_times'][1], sched_times_serializer.validated_data['day']['endTime1'])
-		setattr(latest_avail, day_time_strings_serializer.validated_data['day_times'][2], sched_times_serializer.validated_data['day']['startTime2'])
-		setattr(latest_avail, day_time_strings_serializer.validated_data['day_times'][3], sched_times_serializer.validated_data['day']['endTime2'])
-		latest_avail.save()
+		avail = Availability.objects.get(id=pk)
+		setattr(avail, day_time_strings_serializer.validated_data['day_times'][0], sched_times_serializer.validated_data['day']['startTime1'])
+		setattr(avail, day_time_strings_serializer.validated_data['day_times'][2], sched_times_serializer.validated_data['day']['endTime1'])
+		setattr(avail, day_time_strings_serializer.validated_data['day_times'][1], sched_times_serializer.validated_data['day']['startTime2'])
+		setattr(avail, day_time_strings_serializer.validated_data['day_times'][3], sched_times_serializer.validated_data['day']['endTime2'])
+		avail.save()
 		return Response(sched_times_serializer.data, status=status.HTTP_200_OK)
 	else:
 		return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+	

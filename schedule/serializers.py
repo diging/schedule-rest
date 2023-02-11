@@ -44,7 +44,7 @@ class AvailabilityPostSerializer(serializers.Serializer):
 	Monday = DaySerializer()
 	Tuesday = DaySerializer()
 	Wednesday = DaySerializer()
-	Thursday = DaySerializer()                                                                      
+	Thursday = DaySerializer()                                                                  
 	Friday = DaySerializer()
 
 class AvailabilityDayTimeStringsSerializer(serializers.Serializer):
