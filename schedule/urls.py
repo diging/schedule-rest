@@ -1,5 +1,5 @@
 from rest_framework import routers
-from .views import ScheduleViewset, create_schedule, create_schedule2, list_schedules, list_user_schedules, create_availability, list_availabilities, list_user_availabilities, create_schedules_auto, delete_availability, approve_availability, update_availability
+from .views import ScheduleViewset, create_schedule, create_schedule2, list_schedules, list_user_schedules, create_availability, list_availabilities, list_user_availabilities, create_schedules_auto, delete_availability, approve_schedule, update_availability
 from django.urls import path
 
 app_name = 'schedules'
@@ -17,6 +17,6 @@ urlpatterns = [
 	path('user/availability', list_user_availabilities, name='list_user_availabilities'),
 	path('test/<int:pk>', create_schedules_auto, name='create_schedules_auto'),
 	path('availability/delete/<int:pk>', delete_availability, name='delete_availability'),
-	path('availability/approve/<int:pk>', approve_availability, name='approve_availability'),
-	path('availability/update', update_availability, name='update_availability')
+	path('availability/approve/<int:pk>', approve_schedule, name='approve_availability'),
+	path('availability/update/<int:pk>', update_availability, name='update_availability')
 ]
