@@ -50,7 +50,16 @@ class Schedule(BaseSchedule):
 	total_hours = models.DecimalField(max_digits=4, decimal_places=2)
 
 class TeamMeetings(models.Model):
-	start = models.TimeField()
+	mon_start_1 = models.TimeField()
+	mon_end_1 = models.TimeField()
+	tue_start_1 = models.TimeField()
+	tue_end_1 = models.TimeField()
+	wed_start_1 = models.TimeField()
+	wed_end_1 = models.TimeField()
+	thu_start_1 = models.TimeField()
+	thu_end_1 = models.TimeField()
+	fri_start_1 = models.TimeField()
+	fri_end_1 = models.TimeField()
 	meeting_type = models.CharField(max_length=25)
 	created = DateTimeField(auto_now_add=True)
 	attendees = models.CharField(max_length=200)
