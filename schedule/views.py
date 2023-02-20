@@ -204,16 +204,8 @@ def create_team_meetings(request):
 	Serializer = TeamMeetingSerializer(meetings, many=True)
 	if Serializer.is_valid():
 		meetings = TeamMeetings.objects.create(
-			mon_start_1 = Serializer.validated_data['mon_start_1'],
-			mon_end_1 = Serializer.validated_data['mon_end_1'],
-			tue_start_1 = Serializer.validated_data['tue_start_1'],
-			tue_end_1 = Serializer.validated_data['tue_send_1'],
-			wed_start_1 = Serializer.validated_data['wed_start_1'],
-			wed_end_1 = Serializer.validated_data['wed_end_1'],
-			thu_start_1 = Serializer.validated_data['thu_start_1'],
-			thu_end_1 = Serializer.validated_data['thu_end_1'],
-			fri_start_1 = Serializer.validated_data['fri_start_1'],
-			fri_end_1 = Serializer.validated_data['fri_end_1'],
+			start = Serializer.validated_data['start'],
+			end = Serializer.validated_data['end'],
 			meeting_type = Serializer.validated_data['meeting_type'],
 			attendees = TeamMeetings.set_attendees(Serializer.validated_data['attendees'])
 		)

@@ -110,16 +110,8 @@ class TeamMeetingSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = TeamMeetings
 		fields = [
-			'mon_start_1',
-			'mon_end_1',
-			'tue_start_1',
-			'tue_end_1',
-			'wed_start_1',
-			'wed_end_1',
-			'thu_start_1',
-			'thu_end_1',
-			'fri_start_1',
-			'fri_end_1',
+			'start',
+			'end',
 			'meeting type',
 			'created',
 			'attendees'
