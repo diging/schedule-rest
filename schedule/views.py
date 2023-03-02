@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from rest_framework import response
 from rest_framework.serializers import Serializer
-from .models import Schedule, Availability, BaseSchedule, TeamMeetings
+from .models import Schedule, Availability, BaseSchedule, TeamMeeting
 from .serializers import AvailabilityDayTimeStringsSerializer, AvailabilityListSerializer, AvailabilityPostSerializer, AvailabilityUpdateDayTimesSerializer, ScheduleSerializer, MaxHoursSerializer, AvailabilityUpdateSerializer, TeamMeetingSerializer
 from rest_framework.response import Response
 from rest_framework import viewsets, status
@@ -194,21 +194,23 @@ def update_availability(request, pk):
 		
 @api_view(['GET'])
 def list_team_meetings(request):
-	meetings = TeamMeetings.objects.all()
+	meetings = TeamMeeting.objects.all()
 	Serializer = TeamMeetingSerializer(meetings, many=True)
 	return Response(Serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
-def create_team_meetings(request):
-	meetings = TeamMeetings.objects.all()
-	Serializer = TeamMeetingSerializer(meetings, many=True)
-	if Serializer.is_valid():
-		meetings = TeamMeetings.objects.create(
-			start = Serializer.validated_data['start'],
-			end = Serializer.validated_data['end'],
-			meeting_type = Serializer.validated_data['meeting_type'],
-			attendees = TeamMeetings.set_attendees(Serializer.validated_data['attendees'])
+def create_team_meeting(request):
+	meeting_serializer = TeamMeetingSerializer(data=request.data)
+	print(meeting_serializer)
+	if meeting_serializer.is_valid():
+		TeamMeeting.objects.create(
+			start = meeting_serializer.validated_data['start'],
+			end = meeting_serializer.validated_data['end'],
+			day = meeting_serializer.validated_data['day'],
+			meeting_type = meeting_serializer.validated_data['meeting_type'],
+			attendees = meeting_serializer.validated_data['attendees']
 		)
-		return Response(meetings.data, status=status.HTTP_201_CREATED)
+		return Response(status=status.HTTP_201_CREATED)
 	else:
-		return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+		print(meeting_serializer.errors)
+		return Response(meeting_serializer.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY)

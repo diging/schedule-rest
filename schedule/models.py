@@ -49,9 +49,10 @@ class Availability(BaseSchedule):
 class Schedule(BaseSchedule):
 	total_hours = models.DecimalField(max_digits=4, decimal_places=2)
 
-class TeamMeetings(models.Model):
+class TeamMeeting(models.Model):
 	start = models.TimeField()
 	end = models.TimeField()
+	day = models.IntegerField(default=0)
 	meeting_type = models.CharField(max_length=25)
 	created = DateTimeField(auto_now_add=True)
 	attendees = models.CharField(max_length=200)
