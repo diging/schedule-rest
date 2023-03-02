@@ -1,8 +1,8 @@
 from django.shortcuts import render, get_object_or_404
 from rest_framework import response
 from rest_framework.serializers import Serializer
-from .models import Schedule, Availability, BaseSchedule
-from .serializers import AvailabilityDayTimeStringsSerializer, AvailabilityListSerializer, AvailabilityPostSerializer, AvailabilityUpdateDayTimesSerializer, ScheduleSerializer, MaxHoursSerializer, AvailabilityUpdateSerializer
+from .models import Schedule, Availability, BaseSchedule, TeamMeeting
+from .serializers import AvailabilityDayTimeStringsSerializer, AvailabilityListSerializer, AvailabilityPostSerializer, AvailabilityUpdateDayTimesSerializer, ScheduleSerializer, MaxHoursSerializer, AvailabilityUpdateSerializer, TeamMeetingSerializer
 from rest_framework.response import Response
 from rest_framework import viewsets, status
 from rest_framework.decorators import api_view
@@ -10,10 +10,6 @@ from accounts.models import User
 from datetime import datetime, date, timedelta, time
 from .utils import create_schedule, check_hours
 import json
-from django.forms.models import model_to_dict
-from django.contrib import messages
-
-# Create your views here.
 
 class ScheduleViewset(viewsets.ViewSet):
 
@@ -62,15 +58,15 @@ def create_schedule2(request):
 
 @api_view(['GET'])
 def list_schedules(request):
-		schedules = Schedule.objects.all()
-		Serializer = ScheduleSerializer(schedules, many=True)
-		return Response(Serializer.data, status=status.HTTP_200_OK)
+	schedules = Schedule.objects.all()
+	Serializer = ScheduleSerializer(schedules, many=True)
+	return Response(Serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 def list_user_schedules(request):
-		schedules = Schedule.objects.filter(user=request.user)
-		Serializer = ScheduleSerializer(schedules, many=True)
-		return Response(Serializer.data, status=status.HTTP_200_OK)
+	schedules = Schedule.objects.filter(user=request.user)
+	Serializer = ScheduleSerializer(schedules, many=True)
+	return Response(Serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 def create_availability(request):
@@ -107,15 +103,15 @@ def create_availability(request):
 
 @api_view(['GET'])
 def list_availabilities(request):
-		availabilities = Availability.objects.all()
-		Serializer = AvailabilityListSerializer(availabilities, many=True)
-		return Response(Serializer.data, status=status.HTTP_200_OK)
+	availabilities = Availability.objects.all()
+	Serializer = AvailabilityListSerializer(availabilities, many=True)
+	return Response(Serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 def list_user_availabilities(request):
-		availabilities = Availability.objects.filter(user=request.user)
-		Serializer = AvailabilityListSerializer(availabilities, many=True)
-		return Response(Serializer.data, status=status.HTTP_200_OK)
+	availabilities = Availability.objects.filter(user=request.user)
+	Serializer = AvailabilityListSerializer(availabilities, many=True)
+	return Response(Serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['PATCH'])
 def create_schedules_auto(request, pk):
@@ -195,4 +191,25 @@ def update_availability(request, pk):
 		return Response(sched_times_serializer.data, status=status.HTTP_200_OK)
 	else:
 		return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-	
+		
+@api_view(['GET'])
+def list_team_meetings(request):
+	meetings = TeamMeeting.objects.all()
+	Serializer = TeamMeetingSerializer(meetings, many=True)
+	return Response(Serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+def create_team_meeting(request):
+	meeting_serializer = TeamMeetingSerializer(data=request.data)
+	if meeting_serializer.is_valid():
+		TeamMeeting.objects.create(
+			start = meeting_serializer.validated_data['start'],
+			end = meeting_serializer.validated_data['end'],
+			day = meeting_serializer.validated_data['day'],
+			meeting_type = meeting_serializer.validated_data['meeting_type'],
+			attendees = meeting_serializer.validated_data['attendees']
+		)
+		return Response(status=status.HTTP_201_CREATED)
+	else:
+		print(meeting_serializer.errors)
+		return Response(meeting_serializer.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY)

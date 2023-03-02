@@ -27,7 +27,6 @@ def signup(request):
 			print(user_serializer.errors)
 			return Response(status=status.HTTP_400_BAD_REQUEST)
 
-
 @api_view(['GET'])
 def user_search(request):
 	user_email = request.GET.get('email', '')
@@ -35,7 +34,6 @@ def user_search(request):
 	if user:
 		serializer = UserInfoSerializer(user)
 		return Response(serializer.data, status=status.HTTP_200_OK)
-
 
 @api_view(['POST'])
 @permission_classes([IsAdminUser])
@@ -45,7 +43,6 @@ def create_user(request):
 		serializer.save()
 		return Response(data=serializer.data, status=status.HTTP_201_CREATED)
 	return Response(status=status.HTTP_400_BAD_REQUEST)
-
 
 @api_view(['PATCH'])
 @permission_classes([IsAdminUser])
@@ -57,14 +54,12 @@ def update_user(request, pk):
 		return Response(serializer.data, status=status.HTTP_200_OK)
 	return Response(status=status.HTTP_400_BAD_REQUEST)
 
-
 @api_view(['DELETE'])
 @permission_classes([IsAdminUser])
 def delete_user(request, pk):
 	user = get_object_or_404(User, id=pk)
 	User.objects.filter(id=user.id).delete()
 	return Response(status=status.HTTP_200_OK)
-
 
 @api_view(['GET'])
 def get_current_user(request):
@@ -77,14 +72,12 @@ def user_info(request):
 	serializer = UserInfoSerializer(request.user)
 	return Response(serializer.data, status=status.HTTP_200_OK)
 
-
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def users_list(request):
 	users = User.objects.all()
 	serializer = UserInfoSerializer(users, many=True)
 	return Response(serializer.data, status=status.HTTP_200_OK)
-
 
 @api_view(['PATCH'])
 @permission_classes([AllowAny])
