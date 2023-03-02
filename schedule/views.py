@@ -201,7 +201,6 @@ def list_team_meetings(request):
 @api_view(['POST'])
 def create_team_meeting(request):
 	meeting_serializer = TeamMeetingSerializer(data=request.data)
-	print(meeting_serializer)
 	if meeting_serializer.is_valid():
 		TeamMeeting.objects.create(
 			start = meeting_serializer.validated_data['start'],

@@ -19,6 +19,6 @@ urlpatterns = [
 	path('availability/delete/<int:pk>', delete_availability, name='delete_availability'),
 	path('availability/approve/<int:pk>', approve_schedule, name='approve_availability'),
 	path('availability/update/<int:pk>', update_availability, name='update_availability'),
-    path('meeting/create', create_team_meeting, name='create_team_meeting'),
-    path('meetings/list', list_team_meetings, name='list_team_meetings')
+    path('meeting/create/', create_team_meeting, name='create_team_meeting'),
+    path('meetings/list/', list_team_meetings, name='list_team_meetings')
 ]
