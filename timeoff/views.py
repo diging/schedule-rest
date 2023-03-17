@@ -27,20 +27,19 @@ def list_all_timeoff_requests(request):
 	Serializer = TimeoffSerializer(timeoff_requests, many=True)
 	return Response(Serializer.data, status=status.HTTP_200_OK)
 
-
 @api_view(['POST'])
 def submit_timeoff_view(request):
 	serializer = TimeoffPostSerializer(data=request.data)
 	if serializer.is_valid():
 		Timeoff.objects.create(
 			user = request.user,
-			to_date = serializer.validated_data['to_date'],
-			from_date = serializer.validated_data['from_date'],
-			description = serializer.validated_data['description'],
-			status = 'pending',
-			timeoff_type = serializer.validated_data['timeoff_type'],
-			start_time = serializer.validated_data.get('start_time'),
-			end_time = serializer.validated_data.get('end_time'),
+			start_date = serializer.validated_data['start_date'],
+			end_date = serializer.validated_data['end_date'],
+			start_time = serializer.validated_data['start_time'],
+			end_time = serializer.validated_data['end_time'],
+			all_day = serializer.validated_data['all_day'],
+			request_type = serializer.validated_data['request_type'],
+			reason = serializer.validated_data['reason']
 		)
 		return Response(status=status.HTTP_201_CREATED)
 	return Response(status=status.HTTP_400_BAD_REQUEST)

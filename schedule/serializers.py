@@ -98,14 +98,6 @@ class AvailabilityUpdateSerializer(serializers.ModelSerializer):
 			'reason'
 		]
 
-class AvailabilityUpdateSerializer(serializers.ModelSerializer):
-	class Meta:
-		model = Availability
-		fields = [
-			'status',
-			'reason'
-		]
-
 class TeamMeetingSerializer(serializers.Serializer):
 	start = serializers.TimeField()
 	end = serializers.TimeField()
