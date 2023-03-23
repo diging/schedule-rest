@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Schedule, Availability
+from .models import Schedule, Availability, TeamMeeting
 from accounts.serializers import UserInfoSerializer
 
 class ScheduleSerializer(serializers.ModelSerializer):
@@ -98,11 +98,13 @@ class AvailabilityUpdateSerializer(serializers.ModelSerializer):
 			'reason'
 		]
 
-class TeamMeetingSerializer(serializers.Serializer):
-	start = serializers.TimeField()
-	end = serializers.TimeField()
-	day = serializers.IntegerField()
-	meeting_type = serializers.CharField()
-	attendees = serializers.ListField(
-		child = serializers.CharField(max_length=20)
-	)
+class TeamMeetingSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = TeamMeeting
+		fields = [
+			'start',
+			'end',
+			'day',
+			'meeting_type',
+			'attendees'
+		]
