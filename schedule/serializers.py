@@ -98,13 +98,14 @@ class AvailabilityUpdateSerializer(serializers.ModelSerializer):
 			'reason'
 		]
 
-class TeamMeetingSerializer(serializers.ModelSerializer):
-	class Meta:
-		model = TeamMeeting
-		fields = [
-			'start',
-			'end',
-			'day',
-			'meeting_type',
-			'attendees'
-		]
+class TeamMeetingSerializer(serializers.Serializer):
+	start = serializers.TimeField()
+	end = serializers.TimeField()
+	days = serializers.ListField(
+		child = serializers.CharField()
+	)
+	date = serializers.DateField()
+	meeting_type = serializers.CharField()
+	attendees = serializers.ListField(
+		child = serializers.CharField(max_length=20)
+	)

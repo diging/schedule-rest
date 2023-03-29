@@ -205,7 +205,8 @@ def create_team_meeting(request):
 		TeamMeeting.objects.create(
 			start = meeting_serializer.validated_data['start'],
 			end = meeting_serializer.validated_data['end'],
-			day = meeting_serializer.validated_data['day'],
+			days = meeting_serializer.validated_data['days'],
+			date = meeting_serializer.validated_data['date'],
 			meeting_type = meeting_serializer.validated_data['meeting_type'],
 			attendees = meeting_serializer.validated_data['attendees']
 		)
