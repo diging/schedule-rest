@@ -101,7 +101,10 @@ class AvailabilityUpdateSerializer(serializers.ModelSerializer):
 class TeamMeetingSerializer(serializers.Serializer):
 	start = serializers.TimeField()
 	end = serializers.TimeField()
-	day = serializers.IntegerField()
+	days = serializers.ListField(
+		child = serializers.CharField()
+	)
+	date = serializers.DateField()
 	meeting_type = serializers.CharField()
 	attendees = serializers.ListField(
 		child = serializers.CharField(max_length=20)
