@@ -14,7 +14,6 @@ class TimeoffViewSet(viewsets.ModelViewSet):
 	queryset = Timeoff.objects.all()
 	serializer_class = TimeoffSerializer
 
-
 @api_view(['GET'])
 def list_user_timeoff_requests(request):
 	timeoff_requests = Timeoff.objects.filter(user=request.user)
