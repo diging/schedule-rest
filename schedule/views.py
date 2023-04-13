@@ -1,15 +1,10 @@
-from django.shortcuts import render, get_object_or_404
-from rest_framework import response
-from rest_framework.serializers import Serializer
-from .models import Schedule, Availability, BaseSchedule, TeamMeeting
+from .models import Schedule, Availability, TeamMeeting
 from .serializers import AvailabilityDayTimeStringsSerializer, AvailabilityListSerializer, AvailabilityPostSerializer, AvailabilityUpdateDayTimesSerializer, ScheduleSerializer, MaxHoursSerializer, AvailabilityUpdateSerializer, TeamMeetingSerializer
 from rest_framework.response import Response
 from rest_framework import viewsets, status
 from rest_framework.decorators import api_view
-from accounts.models import User
-from datetime import datetime, date, timedelta, time
+from datetime import datetime
 from .utils import create_schedule, check_hours
-import json
 
 class ScheduleViewset(viewsets.ViewSet):
 
@@ -24,37 +19,6 @@ class ScheduleViewset(viewsets.ViewSet):
 			serializer.save()
 			return Response(serializer.data, status=status.HTTP_201_CREATED)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-@api_view(['POST'])
-def create_schedule2(request):
-	serializer = ScheduleSerializer(data=json.loads(request.data['schedule']))
-	if serializer.is_valid():
-		Schedule.objects.create(
-			user = request.user,
-			mon_start_1 = serializer.validated_data['mon_start_1'],
-			mon_end_1 = serializer.validated_data['mon_end_1'],
-			mon_start_2 = serializer.validated_data['mon_start_2'],
-			mon_end_2 = serializer.validated_data['mon_end_2'],
-			tue_start_1 = serializer.validated_data['tue_start_1'],
-			tue_end_1 = serializer.validated_data['tue_end_1'],
-			tue_start_2 = serializer.validated_data['tue_start_2'],
-			tue_end_2 = serializer.validated_data['tue_end_2'],
-			wed_start_1 = serializer.validated_data['wed_start_1'],
-			wed_end_1 = serializer.validated_data['wed_end_1'],
-			wed_start_2 = serializer.validated_data['wed_start_2'],
-			wed_end_2 = serializer.validated_data['wed_end_2'],
-			thu_start_1 = serializer.validated_data['thu_start_1'],
-			thu_end_1 = serializer.validated_data['thu_end_1'],
-			thu_start_2 = serializer.validated_data['thu_start_2'],
-			thu_end_2 = serializer.validated_data['thu_end_2'],
-			fri_start_1 = serializer.validated_data['fri_start_1'],
-			fri_end_1 = serializer.validated_data['fri_end_1'],
-			fri_start_2 = serializer.validated_data['fri_start_2'],
-			fri_end_2 = serializer.validated_data['fri_end_2'],
-			total_hours = serializer.validated_data['total_hours']
-		)
-		return Response(serializer.data, status=status.HTTP_201_CREATED)
-	return Response(status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
 def list_schedules(request):
@@ -112,43 +76,6 @@ def list_user_availabilities(request):
 	availabilities = Availability.objects.filter(user=request.user)
 	Serializer = AvailabilityListSerializer(availabilities, many=True)
 	return Response(Serializer.data, status=status.HTTP_200_OK)
-
-@api_view(['PATCH'])
-def create_schedules_auto(request, pk):
-	availability = Availability.objects.get(id=pk)
-	schedule = Schedule()
-	time_increments_left = float(availability.max_hours) / .25
-	scheduled_increments = 0
-	availability_iterable = iter(vars(availability).items())
-	for attr, value in availability_iterable:
-		if 'start' in attr:
-			start = value
-			start_day = attr
-			attr, value = next(availability_iterable)
-			duration = datetime.combine(date.today(), value) - datetime.combine(date.today(), start)
-			current_increments = duration / timedelta(minutes=15)
-			if current_increments < time_increments_left:
-				setattr(schedule, start_day, start)
-				setattr(schedule, attr, value)
-				time_increments_left -= current_increments
-				scheduled_increments += current_increments
-			elif time_increments_left > 0:
-				setattr(schedule, start_day, start)
-				minutes_left = time_increments_left * 15
-				duration = datetime.combine(date.today(), start) + timedelta(minutes=minutes_left)
-				scheduled_increments += time_increments_left
-				setattr(schedule, attr, duration.time())
-				# this needs to be fixed
-				#schedule.user = availability.user
-				time_increments_left = 0
-			else:
-				setattr(schedule, start_day, time(0,0))
-				setattr(schedule, attr, time(0,0))
-	setattr(schedule, 'user', availability.user)
-	hours = divmod(scheduled_increments, 4)
-	left_over = hours[1] * .25
-	schedule.total_hours = hours[0] + left_over
-	return Response(status=status.HTTP_200_OK)
 
 @api_view(['DELETE'])
 def delete_availability(request, pk):
