@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
-from . import views
+
 from django.conf import settings
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf.urls.static import static
@@ -28,14 +28,7 @@ from rest_framework_simplejwt.views import (
 )
 
 urlpatterns = [
-	path('admin/', admin.site.urls),
-	path('api/v1/accounts/', include('accounts.urls', namespace='accounts')),
-	path('api/v1/schedules/', include('schedule.urls', namespace='schedules')),
-	path('api/v1/timeoff/', include('timeoff.urls', namespace='timeoff')),
-	path('login/', auth_views.LoginView.as_view(template_name="accounts/login.html")),
-	path('api/v1/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-	path('api/v1/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-	path('api/v1/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
-]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+	path('schedule/', include('sched.sched_urls'))
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 urlpatterns += staticfiles_urlpatterns()

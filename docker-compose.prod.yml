@@ -1,0 +1,29 @@
+version: "3"
+   
+services:
+  db:
+    image: postgres
+    #platform: linux/amd64
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    env_file:
+       - .env
+  web:
+    build: 
+       context: .
+       dockerfile: Dockerfile.prod
+    #platform: linux/amd64
+    command: tail -f /dev/null
+    volumes:
+      - .:/code
+      - ./data/:/data/
+    ports:
+      - "8000:8000"
+    environment:
+      - DATA_PATH=/data/files/
+    env_file:
+       - .env
+    depends_on:
+      - db

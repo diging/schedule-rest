@@ -2,6 +2,9 @@ venv/
 .vscode/
 *.pyc
 db.sqlite3
+staticfiles
+.env
+data
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
