@@ -151,16 +151,9 @@ REST_FRAMEWORK = {
 
 CORS_ALLOW_CREDENTIALS = True
 
-CORS_ORIGIN_WHITELIST = [
-	'http://localhost:8000',
-	'http://localhost:8080',
-	'http://127.0.0.1:8080'
-]
+CORS_ORIGIN_WHITELIST = os.environ.get('CORS_ORIGIN_WHITELIST').split(",")
 
-CSRF_TRUSTED_ORIGINS = [
-	'http://localhost:8080',
-	'http://localhost:8000',
-]
+CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS').split(",")
 
 SIMPLE_JWT = {
 	'ACCESS_TOKEN_LIFETIME': timedelta(minutes=90),
