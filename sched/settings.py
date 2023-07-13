@@ -29,7 +29,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -99,6 +98,9 @@ AUTH_PASSWORD_VALIDATORS = [
 	},
 	{
 		'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {
+            'min_length': 8,
+		}
 	},
 	{
 		'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
@@ -129,7 +131,7 @@ PROJECT_DIR  = os.path.dirname(__file__)
 MEDIA_ROOT = os.path.join(PROJECT_DIR,'media')
 MEDIA_URL = '/media/'
 STATIC_ROOT = os.path.join(BASE_DIR,'staticfiles')
-STATIC_URL = '/schedule/static/'
+STATIC_URL = os.environ.get('STATIC_URL')
 
 STATICFILES_DIRS = (
 	# Put strings here, like "/home/html/static" or "C:/www/django/static".
@@ -147,6 +149,34 @@ REST_FRAMEWORK = {
 	'DEFAULT_PERMISSION_CLASSES': [
 		'rest_framework.permissions.IsAuthenticated',
 	]
+}
+
+LOGGING = {
+	'version': 1,
+	'disable_existing_loggers': False,
+	'handlers': {
+		'console': {
+			'level': 'INFO',
+            'class': 'logging.StreamHandler',
+		},
+		'file': {
+			'level': 'DEBUG',
+			'class': 'logging.FileHandler',
+			'filename': os.environ.get("LOG_FILE_PATH", "../sched.log"),
+		},
+	},
+	'loggers': {
+		'django': {
+			'handlers': ['file', 'console'],
+			'level': 'DEBUG',
+			'propagate': True,
+		},
+		'': {
+			'handlers': ['file'],
+			'level': 'DEBUG',
+			'propagate': True,
+		},
+	},
 }
 
 CORS_ALLOW_CREDENTIALS = True

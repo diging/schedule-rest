@@ -11,22 +11,19 @@ from rest_framework import status
 @permission_classes([AllowAny])
 def signup(request):
 	if request.method == 'POST':
-		print(request.body)
 		user_serializer = UserSerializer(data=request.data)
 		if user_serializer.is_valid():
 			user = user_serializer.save()
-			print("User: %s", user)
 			token = RefreshToken.for_user(user)
-			print("TOKEN: %s", token)
 			context = {
 				'refresh': str(token),
 				'access': str(token.access_token),
+				'message': "User successfully created"
 			}
 			return Response(context, status=status.HTTP_201_CREATED)
 		else:
-			print(user_serializer.errors)
-			return Response(status=status.HTTP_400_BAD_REQUEST)
-
+			return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+ 
 @api_view(['GET'])
 def user_search(request):
 	user_email = request.GET.get('email', '')
