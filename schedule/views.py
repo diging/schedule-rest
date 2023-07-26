@@ -90,16 +90,15 @@ def approve_schedule(request, pk):
 	avail = Availability.objects.get(id=pk)
 	serializer = AvailabilityUpdateSerializer(data=request.data)
 	if serializer.is_valid() and avail:
-		avail.status = serializer._validated_data['status']
-		avail.approval_date = datetime.now()
-		avail.reason = serializer._validated_data['reason']
-		avail.save()
 		check_hours_results = check_hours(avail)
 		if check_hours_results[0]:
 			create_schedule(avail, check_hours_results[1])
-			return Response(status=status.HTTP_200_OK)
-		print("The schedule that you are trying to approve exceeds the maximum hours alotted, please adjust accordingly")
-		return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+			avail.status = serializer._validated_data['status']
+			avail.approval_date = datetime.now()
+			avail.reason = serializer._validated_data['reason']
+			avail.save()
+			return Response({'message': "User successfully created"}, status=status.HTTP_200_OK)
+		return Response({'message': "The schedule that you are trying to approve exceeds the maximum hours alotted, please adjust accordingly before re-approving"}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 	else:
 		print(serializer.errors)
 		return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
